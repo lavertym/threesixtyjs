@@ -14,7 +14,8 @@ var scope,
     defaults = {
         dragDirection: 'horizontal',
         useKeys: false,
-        draggable: true
+        draggable: true,
+        loop: true
     },
     dragDirections = ['horizontal', 'vertical'],
     options = {},
@@ -51,48 +52,46 @@ var scope,
         $el.html('');
     };
 
-    $.fn.nextFrame = ThreeSixty.prototype.nextFrame = function(){
+    $.fn.nextFrame = ThreeSixty.prototype.nextFrame = function(options){
         $(this).each(function(i){
             var $this = $(this),
-                val = $this.data('lastVal') || 0,
-                thisTotal = $this.data('count');
+                val = $this.data('lastVal') || 0;
 
             val = val + 1;
-
-            $this.data('lastVal', val);
-
-            if(val >= thisTotal) val = val % (thisTotal - 1);
-            else if(val <= -thisTotal) val = val % (thisTotal - 1);
-            if(val > 0) val = thisTotal - val;
-
-            val = Math.abs(val);
-
+            val = $el.setFrame(this, val, options);
             $this.find('.threesixty-frame').css({display: 'none'});
             $this.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
         });
     };
 
-    $.fn.prevFrame = ThreeSixty.prototype.prevFrame = function(){
+    $.fn.prevFrame = ThreeSixty.prototype.prevFrame = function(options){
         $(this).each(function(i){
             var $this = $(this),
-                val = $this.data('lastVal') || 0,
-                thisTotal = $this.data('count');
+                val = $this.data('lastVal') || 0;
 
             val = val - 1;
-
-            $this.data('lastVal', val);
-
-            if(val >= thisTotal) val = val % (thisTotal - 1);
-            else if(val <= -thisTotal) val = val % (thisTotal - 1);
-            if(val > 0) val = thisTotal - val;
-
-            val = Math.abs(val);
-
+            val = $el.setFrame(this, val, options);
             $this.find('.threesixty-frame').css({display: 'none'});
             $this.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
         });
     };
 
+    $.fn.setFrame = ThreeSixty.prototype.setFrame = function(el, val, options){
+        var $this = $(el),
+            thisTotal = $this.data('count');
+
+        $this.data('lastVal', val);
+        
+        if(options.loop){
+          if(val >= thisTotal) val = val % (thisTotal - 1);
+          else if (val <= -thisTotal) val = val % (thisTotal - 1);
+        }else{
+          if(val >= thisTotal) val = thisTotal-1;
+          else if(val <= -thisTotal) val = 0;
+        }
+
+        return Math.abs(val);
+    };
 
 
     // PRIVATE METHODS -------------------------------------------------
@@ -266,6 +265,7 @@ var scope,
                     val = lastVal - 1;
                 }
             }
+            val = $el.setFrame($downElem, val, options);
 
             lastVal = val;
             lastY = y;
@@ -274,13 +274,7 @@ var scope,
             $downElem.data('lastY', lastY);
             $downElem.data('lastX', lastX);
             $downElem.data('lastVal', lastVal);
-
-            if(val >= thisTotal) val = val % (thisTotal - 1);
-            else if(val <= -thisTotal) val = val % (thisTotal - 1);
-            if(val > 0) val = thisTotal - val;
-
-            val = Math.abs(val);
-
+            
             $downElem.find('.threesixty-frame').css({display: 'none'});
             $downElem.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
         }
@@ -289,10 +283,10 @@ var scope,
     ThreeSixty.prototype.onKeyDown = function(e) {
         switch(e.keyCode){
             case 37: // left
-                $el.prevFrame();
+                $el.prevFrame(options);
                 break;
             case 39: // right
-                $el.nextFrame();
+                $el.nextFrame(options);
                 break;
         }
     };
