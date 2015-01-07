@@ -15,7 +15,8 @@ var scope,
         dragDirection: 'horizontal',
         useKeys: false,
         draggable: true,
-        loop: true
+        loop: true,
+        image_swap: false
     },
     dragDirections = ['horizontal', 'vertical'],
     options = {},
@@ -59,8 +60,13 @@ var scope,
 
             val = val + 1;
             val = $el.setFrame(this, val, options);
-            $this.find('.threesixty-frame').css({display: 'none'});
-            $this.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
+
+            if(options.image_swap){
+                $this.find('.threesixty-frame').attr('src', $this.data('path').replace('{index}', val))
+            }else{
+                $this.find('.threesixty-frame').css({display: 'none'});
+                $this.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
+            }
         });
     };
 
@@ -71,8 +77,12 @@ var scope,
 
             val = val - 1;
             val = $el.setFrame(this, val, options);
-            $this.find('.threesixty-frame').css({display: 'none'});
-            $this.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
+            if(options.image_swap){
+                $this.find('.threesixty-frame').attr('src', $this.data('path').replace('{index}', val))
+            }else{
+                $this.find('.threesixty-frame').css({display: 'none'});
+                $this.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
+            }
         });
     };
 
@@ -156,10 +166,14 @@ var scope,
         $this.html('');
         $this.removeClass('preloading');
 
-        // add 360 images
-        for(i; i < l; i++){
-            var display = (i === 0) ? 'block' : 'none';
-            html += '<img class="threesixty-frame" style="display:' + display + ';" data-index="' + i + '" src="' + pathTemplate.replace('{index}', i) + '"/>';
+        if(options.image_swap){
+            html = '<img class="threesixty-frame" src="' + pathTemplate.replace('{index}', 0) + '"/>';
+        }else{
+            // add 360 images
+            for(i; i < l; i++){
+                var display = (i === 0) ? 'block' : 'none';
+                html += '<img class="threesixty-frame" style="display:' + display + ';" data-index="' + i + '" src="' + pathTemplate.replace('{index}', i) + '"/>';
+            }
         }
         $this.html(html);
 
@@ -274,9 +288,13 @@ var scope,
             $downElem.data('lastY', lastY);
             $downElem.data('lastX', lastX);
             $downElem.data('lastVal', lastVal);
-            
-            $downElem.find('.threesixty-frame').css({display: 'none'});
-            $downElem.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
+
+            if(options.image_swap){
+                $downElem.find('.threesixty-frame').attr('src', $downElem.data('path').replace('{index}', val))
+            }else{
+                $downElem.find('.threesixty-frame').css({display: 'none'});
+                $downElem.find('.threesixty-frame:eq(' + val + ')').css({display: 'block'});
+            }
         }
     };
 
