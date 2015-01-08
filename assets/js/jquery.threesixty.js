@@ -267,6 +267,8 @@ var scope,
             if(options.dragDirection === 'vertical'){
                 if(y > lastY){
                     val = lastVal + 1;
+                }else if(y === lastY){
+                    return;
                 }else{
                     val = lastVal - 1;
                 }
@@ -311,7 +313,9 @@ var scope,
 
     ThreeSixty.prototype.onMouseUp = function(e) {
         isMouseDown = false;
-        $downElem.trigger('up');
+        if($downElem){
+            $downElem.trigger('up');
+        }
     };
 
     /**
